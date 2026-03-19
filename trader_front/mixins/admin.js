@@ -16,7 +16,7 @@ export default {
             if (DEVELOPMENT) {
                 url = "http://localhost:8082";
             } else {
-                url = "https://traderzip.com";
+                url = "https://api.traderzip.com";
             }
 
             return url;

@@ -7,7 +7,7 @@
         <div class="launchpad__jumbotron">
           <div class="launchpad__jumbotron--header fade-in-up">
             <h2 class="launchpad__jumbotron--h2">Engage Our Token Launch Program</h2>
-            <p class="launchpad__jumbotron--p">Lock assets and get airdrops on TraderZim</p>
+            <p class="launchpad__jumbotron--p">Lock assets and get airdrops on TraderZip</p>
           </div>
 
           <div class="launchpad__jumbogrid">

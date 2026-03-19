@@ -279,7 +279,7 @@
                         <div class="trader__ordercreator--disclaimer">
                           <div class="trader__ordercreator--disclaimertext">
                             <p>
-                              TraderZim Trading AI is an innovative AI trading platform aimed at
+                              TraderZip Trading AI is an innovative AI trading platform aimed at
                               enhancing your market analysis and decision-making process.
                               Please be aware that all investments carry inherent risks
                               and the value of your investments can go up as well as down.

@@ -197,10 +197,10 @@
 
         <div class="spottradearea__fundoption">
           <div class="spottradearea__fundoption--left">
-            <h3 class="spottradearea__fundoption--h3">Send coin to TraderZim</h3>
+            <h3 class="spottradearea__fundoption--h3">Send coin to TraderZip</h3>
             <span class="spottradearea__fundoption--description"
               >If you already hold some crypto currency, you can choose to transfer them
-              to TraderZim via blockchain.</span
+              to TraderZip via blockchain.</span
             >
           </div>
           <div class="spottradearea__fundoption--right">

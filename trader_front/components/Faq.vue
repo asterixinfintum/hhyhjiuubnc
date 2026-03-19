@@ -31,19 +31,19 @@ export default {
     return {
       faq_list: [
         {
-          question: "What is TraderZim Automatic Trader",
+          question: "What is TraderZip Automatic Trader",
           answers: [
-            "TraderZim Automatic Trader is a powerful software designed to eliminate emotion from your trading decisions. It achieves this by leveraging market insights and analyzing your trading data to make objective, data-driven choices.",
+            "TraderZip Automatic Trader is a powerful software designed to eliminate emotion from your trading decisions. It achieves this by leveraging market insights and analyzing your trading data to make objective, data-driven choices.",
           ],
         },
         {
-          question: "Where does TraderZim Automatic Trader get its data from?",
+          question: "Where does TraderZip Automatic Trader get its data from?",
           answers: [
-            "TraderZim Automatic Trader sources its data from decentralized blockchains and curated web data, updated every second. The platform is designed to deliver the most current and accurate information, enabling world-class insights and informed decision-making.",
+            "TraderZip Automatic Trader sources its data from decentralized blockchains and curated web data, updated every second. The platform is designed to deliver the most current and accurate information, enabling world-class insights and informed decision-making.",
           ],
         },
         {
-          question: "What products does TraderZim Automatic Trader provide",
+          question: "What products does TraderZip Automatic Trader provide",
           answers: [
             "Real time market analysis and defi exposure",
             "Automated Trades",

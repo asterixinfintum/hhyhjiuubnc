@@ -44,11 +44,11 @@
 
         <div class="header__logo" v-if="client" @click="$router.push('/overview')">
           <figure></figure>
-          <p>TRADERZIM</p>
+          <p>TRADERZIP</p>
         </div>
         <div class="header__logo" v-if="!client" @click="$router.push('/')">
           <figure></figure>
-          <p>TRADERZIM</p>
+          <p>TRADERZIP</p>
         </div>
       </div>
 
@@ -309,11 +309,11 @@
         <div class="header__left">
           <div class="header__logo" v-if="client" @click="$router.push('/overview')">
             <figure></figure>
-            <p>TRADERZIM</p>
+            <p>TRADERZIP</p>
           </div>
           <div class="header__logo" v-if="!client" @click="$router.push('/')">
             <figure></figure>
-            <p>TRADERZIM</p>
+            <p>TRADERZIP</p>
           </div>
           <div class="header__menu">
             <div class="header__menuitem" @click="navigateToPage('blog')">

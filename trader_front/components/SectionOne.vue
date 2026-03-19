@@ -6,7 +6,7 @@
         Introducing a new way to access and trade DEFI
       </h3>
       <p class="section-paragraph">
-        With TraderZim, your strategies work harder for you. Enjoy unparalleled returns and
+        With TraderZip, your strategies work harder for you. Enjoy unparalleled returns and
         watch your investments flourish as you capitalize on our unique reward programs.
       </p>
       <button

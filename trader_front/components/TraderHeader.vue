@@ -333,7 +333,7 @@ export default {
       showsearch: false,
       currentsearch: "All",
       tradesheader: "Market Trades",
-      announcements: [`TraderZim Token (TraderZimT) ICO launches Soon!`],
+      announcements: [`TraderZip Token (TraderZipT) ICO launches Soon!`],
       mobilemenuopen: false,
     };
   },

@@ -7,7 +7,7 @@
 
       <div class="info">
         <div class="info__box info__content">
-          <h2>Expressed below are the terms of use for TraderZim Trade</h2>
+          <h2>Expressed below are the terms of use for TraderZip Trade</h2>
 
           <div class="info__display--content preview" ref="textcontent"></div>
         </div>

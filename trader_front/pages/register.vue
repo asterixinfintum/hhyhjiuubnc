@@ -4,7 +4,7 @@
       <div class="header__left">
         <div class="header__logo" @click="$router.push('/')">
           <figure></figure>
-          <p>TraderZim</p>
+          <p>TraderZip</p>
         </div>
       </div>
     </div>
@@ -110,7 +110,7 @@
                 </div>
                 <div class="auth__termsdescription">
                   <p class="auth__termsdescription--p">
-                    By creating an account, I agree to TraderZim's
+                    By creating an account, I agree to TraderZip's
                     <span class="highlight" @click="$router.push('/terms')"
                       >Terms of Service</span
                     >

@@ -9,7 +9,7 @@
         <figure>
           <img src="/imgs/bvx-logo.png" />
         </figure>
-        <span>TraderZim</span>
+        <span>TraderZip</span>
       </div>
 
       <div class="headerlanding__menu" :class="{ mmenuopen }">

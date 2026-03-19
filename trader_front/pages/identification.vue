@@ -291,7 +291,7 @@
             <SideNav />
 
             <div class="layout-stretch" v-if="client">
-              <PageIndicator :page_name="'TraderZim Identification'" :nobtns="true" />
+              <PageIndicator :page_name="'TraderZip Identification'" :nobtns="true" />
 
               <div class="layout-padding">
                 <div class="verification__user">

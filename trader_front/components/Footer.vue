@@ -1,7 +1,7 @@
 <template>
   <div class="footer" id="footer">
     <div class="footer__toparea">
-      <figure class="footer__logo">TraderZim</figure>
+      <figure class="footer__logo">TraderZip</figure>
       <div class="footer__links">
         <div class="footer__linksarea">
           <h3 class="footer__linksarea--h3"></h3>
@@ -20,12 +20,12 @@
     <div class="footer__disclaimers">
       <div class="footer__disclaimers--content">
         <p>
-          TraderZim offerings are intricate tools that carry a high risk of rapid financial loss
+          TraderZip offerings are intricate tools that carry a high risk of rapid financial loss
           due to leverage. 77.1% of retail investor accounts incur financial losses when
           trading. It is essential to carefully consider whether you fully understand how
           the markets operate and whether you can afford to take on the substantial risk
           of losing your funds. Please ensure you have a thorough understanding of the
-          risks involved by consulting our detailed risk warning. TraderZim might provide
+          risks involved by consulting our detailed risk warning. TraderZip might provide
           third-party content on this website, including information about financial
           market conditions.
         </p>
@@ -35,7 +35,7 @@
           interpreted as financial advice, investment recommendations, investment
           analysis, or an invitation to engage in transactions involving financial
           instruments. Any financial decisions should be made independently by the client
-          after their personal evaluation. TraderZim does not guarantee the accuracy or
+          after their personal evaluation. TraderZip does not guarantee the accuracy or
           completeness of the provided information or accept responsibility for financial
           losses resulting from investments based on recommendations, projections, or
           other information supplied. Always seek independent advice to assess your
@@ -44,9 +44,9 @@
         </p>
 
         <p>
-          TraderZim has no obligation to update the content provided. Opinions expressed may be
-          personal to the contributor and do not necessarily reflect the views of TraderZim. By
-          leveraging passporting, TraderZim can provide its services and offerings to the
+          TraderZip has no obligation to update the content provided. Opinions expressed may be
+          personal to the contributor and do not necessarily reflect the views of TraderZip. By
+          leveraging passporting, TraderZip can provide its services and offerings to the
           following European Economic Area (EEA) countries: Austria, Bulgaria, Croatia,
           Denmark, Estonia, Finland, France, Germany, Greece, Hungary, Ireland, Italy,
           Latvia, Liechtenstein, Lithuania, Luxembourg, Malta, Netherlands, Norway,

@@ -60,7 +60,7 @@ export default {
           horzAlign: "center",
           vertAlign: "center",
           color: "rgba(0, 255, 255, .2)",
-          text: `(${this.currentpair.pair}) TraderZim Finance`,
+          text: `(${this.currentpair.pair}) TraderZip Finance`,
         },
         layout: {
           background: {

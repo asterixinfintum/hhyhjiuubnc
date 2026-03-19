@@ -36,7 +36,7 @@ export default {
           horzAlign: "center",
           vertAlign: "center",
           color: "rgba(0, 255, 255, .2)",
-          text: `TraderZim Auto Trade`,
+          text: `TraderZip Auto Trade`,
         },
         layout: {
           background: {

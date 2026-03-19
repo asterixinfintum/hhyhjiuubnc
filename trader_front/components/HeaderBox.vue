@@ -11,7 +11,7 @@ export default {
   data() {
     return {
       announcements: [
-        `TraderZim Token (TraderZimT) ICO launches Soon!`,
+        `TraderZip Token (TraderZipT) ICO launches Soon!`,
       ],
     };
   },

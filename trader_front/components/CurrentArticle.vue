@@ -23,7 +23,7 @@
       class="article__paragraph article__paragraph--weight500 article__margin--typicalbottm"
     >
       Note: Please do your own research before making any trades for the aforementioned
-      token outside TraderZim to avoid any scams and ensure the safety of your funds.
+      token outside TraderZip to avoid any scams and ensure the safety of your funds.
     </p>
 
     <p
@@ -42,7 +42,7 @@
     <p
       class="article__paragraph article__paragraph--italic article__margin--typicalbottm"
     >
-      TraderZim reserves the right in its sole discretion to amend or cancel this announcement
+      TraderZip reserves the right in its sole discretion to amend or cancel this announcement
       at any time and for any reasons without prior notice.
     </p>
 
@@ -51,7 +51,7 @@
     >
       Digital asset prices are subject to high market risk and price volatility. The value
       of your investment may go down or up, and you may not get back the amount invested.
-      You are solely responsible for your investment decisions and TraderZim is not liable for
+      You are solely responsible for your investment decisions and TraderZip is not liable for
       any losses you may incur. Past performance is not a reliable predictor of future
       performance. You should only invest in products you are familiar with and where you
       understand the risks. You should carefully consider your investment experience,

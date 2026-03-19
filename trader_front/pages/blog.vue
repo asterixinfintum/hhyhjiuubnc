@@ -22,7 +22,7 @@
                 necessary for financial resilience.
               </p>
 
-              <div class="info__display--p underline">TraderZim contributor</div>
+              <div class="info__display--p underline">TraderZip contributor</div>
             </div>
           </div>
         </div>

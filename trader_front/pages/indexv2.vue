@@ -61,7 +61,7 @@ export default {
 
     injectedDiv.innerHTML = `
             <p style="margin: 0; text-align: center;font-size: 13px;">
-                TraderZim is rebranding. We have an all new domain!
+                TraderZip is rebranding. We have an all new domain!
                 <a href="${newUrl}" target="_blank"  rel="noopener noreferrer" style="text-decoration: none;
                   color: #FFF;
                   font-size: 13px;

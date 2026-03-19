@@ -4,7 +4,7 @@
       <div class="header__left">
         <div class="header__logo" @click="$router.push('/')">
           <figure></figure>
-          <p>TraderZim</p>
+          <p>TraderZip</p>
         </div>
       </div>
     </div>

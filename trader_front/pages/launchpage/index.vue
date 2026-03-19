@@ -7,7 +7,7 @@
         <div class="article">
           <div class="article__main">
             <h2 class="article__header article__margin--headerbottm">
-              Introducing Simon's Cat (1000CAT) and Pudgy Penguins (PENGU) on TraderZim HODLer
+              Introducing Simon's Cat (1000CAT) and Pudgy Penguins (PENGU) on TraderZip HODLer
               Airdrops!
             </h2>
 
@@ -21,7 +21,7 @@
               class="article__paragraph article__paragraph--weight500 article__margin--typicalbottm"
             >
               Note: Please do your own research before making any trades for the
-              aforementioned token outside TraderZim to avoid any scams and ensure the safety of
+              aforementioned token outside TraderZip to avoid any scams and ensure the safety of
               your funds.
             </p>
 
@@ -41,7 +41,7 @@
             <p
               class="article__paragraph article__paragraph--italic article__margin--typicalbottm"
             >
-              TraderZim reserves the right in its sole discretion to amend or cancel this
+              TraderZip reserves the right in its sole discretion to amend or cancel this
               announcement at any time and for any reasons without prior notice.
             </p>
 
@@ -51,7 +51,7 @@
               Digital asset prices are subject to high market risk and price volatility.
               The value of your investment may go down or up, and you may not get back the
               amount invested. You are solely responsible for your investment decisions
-              and TraderZim is not liable for any losses you may incur. Past performance is not
+              and TraderZip is not liable for any losses you may incur. Past performance is not
               a reliable predictor of future performance. You should only invest in
               products you are familiar with and where you understand the risks. You
               should carefully consider your investment experience, financial situation,

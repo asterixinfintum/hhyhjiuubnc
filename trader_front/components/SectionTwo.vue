@@ -7,7 +7,7 @@
         Safety First: Uncompromised Security
       </h3>
       <p class="section-paragraph">
-        Trust in TraderZim's robust security measures that prioritize your assets and
+        Trust in TraderZip's robust security measures that prioritize your assets and
         information. Our state-of-the-art protection ensures you trade with peace of mind,
         every step of the way.
       </p>

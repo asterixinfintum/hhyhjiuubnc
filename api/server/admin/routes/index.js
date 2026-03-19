@@ -1,0 +1,1076 @@
+import express from 'express';
+import jwt from 'jsonwebtoken';
+import multer from 'multer';
+import fs from 'fs';
+import readline from 'readline';
+
+import User from '../../models/user';
+import Agent from '../../models/admin';
+import TokenTracker from '../../models/tokentracker';
+import Wllt from '../../wallet/models/wllt';
+import Asset from '../../models/asset';
+import AssetBlc from '../../wallet/models/assetblc';
+import Pair from '../../models/pair';
+
+import UserWallet from '../../userwallet/models/wallet';
+import TraderOrder from '../../trader/models/tradeOrder';
+
+import deliverEmail from '../../utils/deliverEmail';
+
+const { formatDistanceToNow } = require('date-fns');
+
+const admin = express.Router();
+
+import generatetradingpairs from '../../functions/generatetradingpairs';
+import addpairquotes from '../../functions/addpairquotes';
+
+import updatecommodities from '../../trade/commodities/updatecommodities';
+
+import authenticateToken from '../../utils/authenticateToken';
+
+const pairstrings = [
+    'UNI/ETH', 'UNI/USDC', 'UNI/BTC', 'UNI/BNB', 'XRP/USDT', 'XRP/BTC', 'XRP/USD',
+    'XRP/BNB', 'XRP/ETH', 'BTC/USD', 'BTC/USDT', 'BTC/BNB', 'ETH/USD', 'ETH/USDT',
+    'ETH/USDC', 'ETH/BTC', 'ETH/TRX', 'XMR/BTC', 'XMR/USD', 'XMR/USDT', 'XMR/USDC',
+    'XMR/ETH', 'XMR/BNB', 'DOGE/USDT', 'DOGE/USD', 'DOGE/BTC', 'DOGE/USDC', 'POLY/USD',
+    'POLY/USDT', 'POLY/BTC', 'ADA/USDT', 'ADA/USD', 'ADA/BTC', 'ADA/ETH', 'ADA/BNB',
+    'ADA/USDC', 'BAT/USDT', 'BAT/USD', 'BAT/BTC', 'BAT/ETH', 'BAT/USD', 'TRX/USDT',
+    'TRX/USD', 'TRX/ETH', 'TRX/BTC', 'TRX/XRP', 'TRX/ADA', 'BNB/USDT', 'BNB/USD',
+    'BNB/USDC', 'BNB/ETH', 'BNB/TRX', 'BNB/BTC', 'EOS/USDT', 'EOS/USD', 'EOS/USDT',
+    'EOS/BTC', 'EOS/ETH', 'DASH/USDT', 'DASH/BTC', 'DASH/USDT', 'DASH/USDC', 'DASH/ETH',
+    'MKR/USDT', 'MKR/USD', 'MKR/BTC', 'MKR/ETH', 'NEO/USDT', 'NEO/USD', 'NEO/BTC',
+    'NEO/ETH', 'NEO/TRX', 'LINK/USD', 'LINK/USDT', 'LINK/BTC', 'LINK/ETH', 'LINK/TRX',
+    'BCH/USD', 'BCH/USDT', 'BCH/BTC', 'BCH/ETH', 'LTC/USD', 'LTC/USDT', 'LTC/BTC',
+    'LTC/ETH', 'SNX/USD', 'SNX/USDT', 'SNX/BTC', 'SNX/ETH', 'XLM/XRP', 'XLM/USD',
+    'XLM/USDT', 'XLM/BTC', 'XLM/ETH', 'T/USD', 'TSLA/USD', 'FB/USD', 'JPM/USD',
+    'VALE/USD', 'C/USD', 'GE/USD', 'MSFT/USD', 'GM/USD', 'NIO/USD', 'INTC/USD',
+    'NOK/USD', 'NVDA/USD', 'KO/USD', 'AAL/USD', 'WFC/USD', 'F/USD', 'AAPL/USD',
+    'BAC/USD', 'CCL/USD', 'BA/USD', 'UBER/USD', 'M/USD', 'AMD/USD', 'DIS/USD',
+    'PFE/USD', 'SNAP/USD', 'XOM/USD', 'WHEAT/USD', 'NATURAL_GAS/USD', 'BRENT/USD',
+    'COTTON/USD', 'COPPER/USD', 'ALUMINIUM/USD', 'COFFEE/USD', 'CORN/USD', 'SUGAR/USD',
+    'WTI/USD', "Tin/USD",
+    "Tin/USDT",
+    "Gold/USD",
+    "Nickel/USD",
+    "Ethanol/USD",
+    "Palladium/USD",
+    "Silver/USD",
+    "Heating Oil/USD",
+    "Platinum/USD",
+    "Coal/USD",
+    "RBOB Gasoline/USD",
+    "Uranium/USD",
+    "Oil (Brent)/USD",
+    "Oil (WTI)/USD",
+    "Aluminium/USD",
+    "Lead/USD",
+    "Iron Ore/USD",
+    "Lean Hog/USD",
+    "Oats/USD",
+    "Lumber/USD",
+    "Cocoa/USD",
+    "Live Cattle/USD",
+    "Feeder Cattle/USD",
+    "Milk/USD",
+    "Milk/USDT",
+    "Orange Juice/USD",
+    "Palm Oil/USD",
+    "Rapeseed/USD",
+    "Rice/USDT",
+    "Rice/USD",
+    "Zinc/USD",
+    "Soybean Meal/USD",
+    "Soybeans/USD",
+    "Soybean Oil/USD",
+    "Soybean Oil/USD"
+];
+
+async function relistpairs() {
+    for (const pairstring of pairstrings) {
+        const pair = await Pair.findOne({ pair: pairstring });
+
+        if (pair) {
+            pair.listed = true;
+
+            pair.save();
+        }
+    }
+}
+
+admin.post('/admin/create', async (req, res) => {
+    try {
+        const receivedCredentials = req.body;
+
+        const newagent = new Agent(receivedCredentials);
+
+        await newagent.save();
+
+        res.json({
+            message: 'Agent saved successfully.',
+            newagent
+        });
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ error: 'An error occurred during registration.' });
+    }
+});
+
+admin.post('/admin/login', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+
+        const agent = await Agent.findOne({ username, password });
+
+        if (!agent) {
+            return res.sendStatus(401); // Unauthorized
+        }
+
+        const payload = {
+            _id: agent._id,
+            username: agent.username
+        };
+
+        const token = jwt.sign(payload, process.env.secretKeyJWT);
+
+        const newtokentracker = new TokenTracker({ token, type: 'agent', unid: agent._id });
+
+        await newtokentracker.save();
+
+        agent.token = token;
+        await agent.save();
+
+        res.status(200).json({
+            message: 'Login successful.',
+            token,
+            agentdata: {
+                username: agent.username,
+                _id: agent._id
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred during login.' });
+    }
+});
+
+admin.get('/admin/all', async (req, res) => {
+    try {
+        const { master } = req.query;
+
+        if (master !== process.env.masterKey) {
+            return res.sendStatus(401); // Unauthorized
+        }
+
+        const agents = await Agent.find();
+
+        res.status(200).json({ agents });
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred during agents fetch.' });
+    }
+});
+
+admin.put('/admin/edit', async (req, res) => {
+    try {
+        const { master, agentid } = req.query;
+        const { password } = req.body;
+
+        if (master !== process.env.masterKey) {
+            return res.sendStatus(401); // Unauthorized
+        }
+
+        if (password) {
+            const agent = await Agent.findOne({ _id: agentid });
+
+            if (agent) {
+                const tokentracker = await TokenTracker.find({ token: agent.token, unid: agent._id });
+
+                if (tokentracker.length) {
+                    for (const tracker of tokentracker) {
+                        await TokenTracker.deleteToken(tracker.token);
+                    }
+                }
+
+                agent.password = password;
+                agent.token = '';
+
+                await agent.save();
+
+                const updatedagent = await Agent.findOne({ _id: agentid });
+
+                res.json({
+                    message: 'Agent updated successfully.',
+                    updatedagent
+                });
+            } else {
+                res.status(404).json({ message: 'Agent not found.' });
+            }
+
+        }
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred during update.' });
+    }
+});
+
+admin.delete('/admin/deleteall', async (req, res) => {
+    try {
+        const { master } = req.query;
+
+        if (master !== process.env.masterKey) {
+            return res.sendStatus(401); // Unauthorized
+        }
+
+        await Agent.deleteMany({});
+
+        await TokenTracker.deleteTokensByType('agent');
+
+        res.json({
+            message: 'Agent deleted successfully.'
+        });
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred during delete.' });
+    }
+});
+
+admin.get('/allusers', authenticateToken, async (req, res) => {
+    try {
+        const users = await User.find();
+        const useritems = [];
+
+        users.forEach(user => {
+            const userObject = user.toObject();
+
+            if (userObject.lastOnline) {
+                const lastseen = formatDistanceToNow(new Date(user.lastOnline), { addSuffix: true });
+                userObject.lastseen = lastseen;
+            }
+
+            useritems.push(userObject); //
+        })
+
+        res.status(200).send({ users: useritems });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('An error occurred');
+    }
+});
+
+admin.get('/user', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.query
+
+        const user = await User.findOne({ _id: id });
+
+        const userObject = user.toObject();
+
+        if (userObject.lastOnline) {
+            const lastseen = formatDistanceToNow(new Date(user.lastOnline), { addSuffix: true });
+            userObject.lastseen = lastseen;
+        }
+
+        res.status(200).send({ user: userObject });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('An error occurred');
+    }
+});
+
+admin.get('/userwallets', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.query
+
+        const userwallets = await Wllt.find({ ownerId: id });
+        res.status(200).send({ userwallets });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('An error occurred');
+    }
+});
+
+admin.get('/user/assets', authenticateToken, async (req, res) => {
+    const { id, wallet } = req.query;
+
+    try {
+        const crypto = await Asset.find({ assetType: 'crypto' });
+        const commodities = await Asset.find({ assetType: 'commodity' });
+        const stocks = await Asset.find({ assetType: 'stock' });
+        const fiat = await Asset.find({ assetType: 'fiat' });
+        const userwallet = await Wllt.findOne({ _id: wallet });
+
+        const processAssets = async (assets) => {
+            const assetPromises = assets.map(async asset => {
+                const assetid = asset._id.toString();
+                const asstBlc = await AssetBlc.findOne({ assetid, wallet: userwallet._id });
+                return { ...asset._doc, asstBlc: asstBlc ? asstBlc.balance : 0 };
+            });
+            return await Promise.all(assetPromises);
+        };
+
+        const cryptoblc = await processAssets(crypto);
+        const commoditiesblc = await processAssets(commodities);
+        const stocksblc = await processAssets(stocks);
+        const fiatblc = await processAssets(fiat);
+
+        // Send response back to client
+        res.status(200).json({
+            crypto: cryptoblc,
+            commodities: commoditiesblc,
+            stocks: stocksblc,
+            fiat: fiatblc,
+            userwallet
+        });
+
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error processing request');
+    }
+});
+
+admin.post('/user/asset/add', authenticateToken, async (req, res) => {
+    try {
+        const { balanceupdate } = req.body;
+        const { wallet, assetid } = req.query;
+
+        const userwallet = await Wllt.findOne({ _id: wallet });
+
+        await userwallet.deposit(balanceupdate, assetid)
+
+        res.status(200).json({
+            message: 'done'
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error processing request');
+    }
+})
+
+admin.post('/user/asset/subtract', authenticateToken, async (req, res) => {
+    try {
+        const { balanceupdate } = req.body;
+        const { wallet, assetid } = req.query;
+
+        const userwallet = await Wllt.findOne({ _id: wallet });
+
+        await userwallet.withdraw(balanceupdate, assetid);
+
+        res.status(200).json({
+            message: 'done'
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error processing request');
+    }
+});
+
+admin.post('/user/accounttypeupdate/update', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.query;
+        const { accounttypeupdate } = req.body;
+
+        const user = await User.findOne({ _id: id });
+
+        user.accountplan = accounttypeupdate;
+        await user.save();
+
+        res.status(200).json({
+            message: 'done'
+        });
+    } catch (error) {
+        res.status(500).send('Error processing request');
+    }
+});
+
+admin.post('/user/spotbtcaddress/update', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.query;
+        const { spotbtcaddress } = req.body;
+
+        const user = await User.findOne({ _id: id });
+
+        user.spotbtcaddress = spotbtcaddress;
+        await user.save();
+
+        res.status(200).json({
+            message: 'done'
+        });
+    } catch (error) {
+        res.status(500).send('Error processing request');
+    }
+})
+
+admin.post('/user/marginbtcaddress/update', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.query;
+        const { marginbtcaddress } = req.body;
+
+        const user = await User.findOne({ _id: id });
+
+        user.marginbtcaddress = marginbtcaddress;
+        await user.save();
+
+        res.status(200).json({
+            message: 'done'
+        });
+    } catch (error) {
+        res.status(500).send('Error processing request');
+    }
+});
+
+admin.get('/jhgchdh/generatetradingpair', async (req, res) => {
+    try {
+        await generatetradingpairs();
+
+        res.status(200).json({ message: 'trading pairs generated' });
+    } catch (error) {
+        res.status(500).send('Error processing request');
+    }
+});
+
+admin.get('/jhgchdh/addpairquotes', async (req, res) => {
+    try {
+        await addpairquotes();
+
+        res.status(200).json({ message: 'pair quotes generated' });
+    } catch (error) {
+        res.status(500).send('Error processing request');
+    }
+});
+
+admin.get('/jhgchdh/updatecommoditydatabase', async (req, res) => {
+    try {
+        await updatecommodities();
+
+        res.status(200).json({ message: 'commodity database updated successfully' });
+    } catch (error) {
+        res.status(500).send('error in commodity database update');
+    }
+});
+
+admin.post('/jhgchdh/pair/delist', async (req, res) => {
+    try {
+        const { pairid } = req.query;
+
+        const pairitems = await Pair.find({ _id: pairid });
+
+        if (pairitems.length === 0) {
+            return res.status(404).json({ message: 'No matching pairs found to update' });
+        }
+
+        for (const pairitem of pairitems) {
+            pairitem.listed = false;
+            await pairitem.save();
+        }
+
+        res.status(200).json({ message: `${pairitems.length} pair delisted successfully` });
+    } catch (error) {
+        console.error(error); // It's often useful to log the error for debugging
+        res.status(500).send('Error in pair database update');
+    }
+});
+
+admin.post('/jhgchdh/pair/relist', async (req, res) => {
+    try {
+        const { pairid } = req.query;
+
+        const pairitems = await Pair.find({ _id: pairid });
+
+        if (pairitems.length === 0) {
+            return res.status(404).json({ message: 'No matching pairs found to update' });
+        }
+
+        for (const pairitem of pairitems) {
+            pairitem.listed = true;
+            await pairitem.save();
+        }
+
+        res.status(200).json({ message: `${pairitems.length} pair relisted successfully` });
+    } catch (error) {
+        console.error(error); // It's often useful to log the error for debugging
+        res.status(500).send('Error in pair database update');
+    }
+});
+
+admin.post('/jhgchdh/asset/delist', async (req, res) => {
+    try {
+        const { assetid } = req.query;
+
+        const assets = await Asset.find({ _id: assetid });
+
+        if (assets.length === 0) {
+            return res.status(404).json({ message: 'No matching pairs found to update' });
+        }
+
+        for (const asset of assets) {
+            asset.listed = false;
+            await asset.save();
+        }
+
+        res.status(200).json({ message: `${assets.length} asset delisted successfully` });
+
+    } catch (error) {
+        res.status(500).send('error in asset database update');
+    }
+});
+
+admin.post('/jhgchdh/asset/relist', async (req, res) => {
+    try {
+        const { assetid } = req.query;
+
+        const assets = await Asset.find({ _id: assetid });
+
+        if (assets.length === 0) {
+            return res.status(404).json({ message: 'No matching pairs found to update' });
+        }
+
+        for (const asset of assets) {
+            asset.listed = true;
+            await asset.save();
+        }
+
+        res.status(200).json({ message: `${assets.length} asset relisted successfully` });
+
+    } catch (error) {
+        res.status(500).send('error in asset database update');
+    }
+});
+
+admin.post('/jhgchdh/pairs/relistings', async (req, res) => {
+    try {
+        relistpairs();
+
+        res.status(200).json({ message: `relistings done` });
+    } catch (error) {
+        res.status(500).send('error triggering relistings');
+    }
+});
+
+admin.put('/jhgchdh/tradeorder/update', authenticateToken, async (req, res) => {
+    try {
+        const { orderid } = req.query;
+        const { filled, profit, loss, active, state } = req.body;
+
+        const filter = { _id: orderid };
+
+        const update = {
+            filled: parseFloat(filled),
+            profit: parseFloat(profit),
+            loss: parseFloat(loss),
+            active: toBoolean(active),
+            state
+        };
+
+        const options = { new: true };
+
+        TraderOrder.findOneAndUpdate(filter, update, options, (err, doc) => {
+            if (err) {
+                res.status(500).send('error updating tradeorder');
+            }
+
+            res.status(200).send({ message: 'order updated' });
+        });
+    } catch (error) {
+        res.status(500).send('error updating tradeorder');
+    }
+});
+
+admin.put('/jhgchdh/assetitem/update', authenticateToken, async (req, res) => {
+    try {
+        const { assetid } = req.query;
+        const { priceupdate } = req.body;
+
+        const filter = { _id: assetid };
+
+        const update = {
+            price: priceupdate
+        }
+
+        const options = { new: true };
+
+        Asset.findOneAndUpdate(filter, update, options, (err, doc) => {
+            if (err) {
+                res.status(500).send('error updating asset');
+            }
+
+            res.status(200).send({ message: 'asset updated' });
+        });
+    } catch (error) {
+        res.status(500).send('error updating asset');
+    }
+});
+
+const formatEmailHTML = (htmlContent) => {
+    return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            border-radius: 8px 8px 0 0;
+            text-align: center;
+        }
+        .content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 0 0 8px 8px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Notification</h1>
+        </div>
+        <div class="content">
+            ${htmlContent}
+        </div>
+        <div class="footer">
+            <p>This is an automated message. Please do not reply to this email.</p>
+        </div>
+    </div>
+</body>
+</html>`;
+};
+
+admin.post('/admin/deliverEmail', async (req, res) => {
+    try {
+        const { master } = req.query;
+        const { from, to, subject, html } = req.body;
+
+        // Validate master key
+        if (master !== process.env.masterKey) {
+            return res.sendStatus(401); // Unauthorized
+        }
+
+        // Validate required fields
+        if (!from || typeof from !== 'string') {
+            return res.status(400).json({ error: 'Valid "from" field (string) is required' });
+        }
+
+        if (!to || !Array.isArray(to) || to.length === 0) {
+            return res.status(400).json({ error: 'Valid "to" field (non-empty array) is required' });
+        }
+
+        // Validate each email in the 'to' array
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        for (const email of to) {
+            if (typeof email !== 'string' || !emailRegex.test(email)) {
+                return res.status(400).json({ error: `Invalid email address in "to" array: ${email}` });
+            }
+        }
+
+        if (!subject || typeof subject !== 'string') {
+            return res.status(400).json({ error: 'Valid "subject" field (string) is required' });
+        }
+
+        if (!html || typeof html !== 'string') {
+            return res.status(400).json({ error: 'Valid "html" field (string) is required' });
+        }
+
+        // Format the HTML content
+        const formattedHTML = formatEmailHTML(html);
+
+        // Here you would typically send the email using your email service
+        // For example, with nodemailer, SendGrid, etc.
+        /* console.log('Email details:', {
+             from,
+             to,
+             subject,
+             html: formattedHTML
+         });*/
+
+        // Placeholder for actual email sending logic
+        await deliverEmail({ from, to, subject, html: formattedHTML });
+
+        res.status(200).json({
+            message: 'Email queued for delivery',
+            details: {
+                from,
+                to,
+                subject,
+                htmlLength: formattedHTML.length
+            }
+        });
+
+    } catch (error) {
+        console.error('Error in deliverEmail:', error);
+        res.status(500).json({ error: 'An error occurred during email delivery.' });
+    }
+});
+
+admin.post('/admin/many/deliverEmail', async (req, res) => {
+    try {
+        const { master } = req.query;
+        const { from, subject, html } = req.body;
+
+        // Validate master key
+        if (master !== process.env.masterKey) {
+            return res.sendStatus(401); // Unauthorized
+        }
+
+        // Validate required fields
+        if (!from || typeof from !== 'string') {
+            return res.status(400).json({ error: 'Valid "from" field (string) is required' });
+        }
+        if (!subject || typeof subject !== 'string') {
+            return res.status(400).json({ error: 'Valid "subject" field (string) is required' });
+        }
+        if (!html || typeof html !== 'string') {
+            return res.status(400).json({ error: 'Valid "html" field (string) is required' });
+        }
+
+        const formattedHTML = formatEmailHTML(html);
+
+        // Email regex validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        const batchSize = 3;
+        let page = 0;
+        let totalSent = 0;
+        let totalUsers = 0;
+        let batch;
+
+        do {
+            // Fetch users in batches of 3
+            batch = await User.find()
+                .skip(page * batchSize)
+                .limit(batchSize)
+                .select('email')
+                .lean();
+
+            if (!batch.length) break;
+            totalUsers += batch.length;
+
+            // Filter valid emails
+            const validEmails = batch
+                .map(u => u.email)
+                .filter(email => emailRegex.test(email));
+
+            if (validEmails.length > 0) {
+                // Send to each valid email (separately, or together)
+                await deliverEmail({
+                    from,
+                    to: validEmails,
+                    subject,
+                    html: formattedHTML
+                });
+                totalSent += validEmails.length;
+            }
+
+            page++;
+
+            // Small delay between batches (optional to avoid rate limiting)
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+        } while (batch.length === batchSize);
+
+        res.status(200).json({
+            message: 'All emails queued for delivery',
+            summary: {
+                totalUsers,
+                totalSent,
+                batchSize
+            }
+        });
+
+    } catch (error) {
+        console.error('Error in /admin/many/deliverEmail:', error);
+        res.status(500).json({ error: 'An error occurred during batch email delivery.' });
+    }
+});
+
+const upload = multer({
+    dest: 'uploads/',
+    fileFilter: (req, file, cb) => {
+        if (file.mimetype === 'text/plain' || file.originalname.endsWith('.txt')) {
+            cb(null, true);
+        } else {
+            cb(new Error('Only .txt files are allowed'), false);
+        }
+    },
+    limits: {
+        fileSize: 10 * 1024 * 1024, // 10MB limit
+    }
+});
+
+admin.post('/admin/balance/note', upload.single('file'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No file uploaded.' });
+        }
+
+        const filePath = req.file.path;
+        const fileStream = fs.createReadStream(filePath);
+
+        const rl = readline.createInterface({
+            input: fileStream,
+            crlfDelay: Infinity
+        });
+
+        const results = [];
+
+        for await (const line of rl) {
+            const trimmedLine = line.trim();
+            if (!trimmedLine) continue;
+
+            // More comprehensive parsing
+            let email = null;
+            let amount = null;
+
+            // Extract email - look for pattern in parentheses or anywhere in line
+            const emailInParentheses = trimmedLine.match(/\(([^)]+@[^)]+)\)/);
+            if (emailInParentheses) {
+                email = emailInParentheses[1];
+            } else {
+                // Fallback: look for email pattern anywhere
+                const emailMatch = trimmedLine.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
+                email = emailMatch ? emailMatch[0] : null;
+            }
+
+            // Extract amount - look for "add" followed by numbers
+            const amountMatch = trimmedLine.match(/add\s+(\d+)/i);
+            amount = amountMatch ? parseInt(amountMatch[1]) : null;
+
+            if (email && amount !== null) {
+                const normalizedEmail = email.toLowerCase();
+
+                // Find user by email in your database
+                const user = await User.findOne({ email: normalizedEmail });
+
+                if (user) {
+                    /*console.log('Found user:', {
+                        id: user._id,
+                        email: user.email,
+                        name: user.name
+                    });*/
+
+                    // Find ONLY fiat and spot wallets for this user
+                    const wallets = await UserWallet.find({
+                        owner: user._id,
+                        wallettype: { $in: ['spot'] }
+                    });
+
+                    // Find assets containing "usdt" or "Tether"
+                    const asset = await Asset.findOne({
+                        $or: [
+                            { name: { $regex: /usdt|tether/i } },
+                            { coin: { $regex: /usdt|tether/i } },
+                            { symbol: { $regex: /usdt|tether/i } }
+                        ]
+                    });
+
+                    for (const wallet of wallets) {
+                        let updated = false;
+                        let balances = wallet.balances;
+
+                        console.log(asset, wallet.balances, user.email)
+
+                        const assetbalance = balances.find(blc => blc.asset_id.toString() === asset._id.toString());
+
+                        if (assetbalance) {
+                            // Update existing balance
+                            assetbalance.balance = Number(assetbalance.balance) + Number(amount);
+                            updated = true;
+                            console.log(assetbalance.balance)
+                            console.log('++++++_____====')
+                            console.log(`Added +${amount} to existing asset balance (${asset.name}).`);
+                        } else {
+                            // Add new asset balance entry
+                            const newBalanceEntry = {
+                                asset_id: asset._id,
+                                assetname: asset.name,
+                                balance: Number(amount)
+                            };
+
+                            balances.push(newBalanceEntry);
+                            updated = true;
+                            console.log(`Created new USDT/Tether balance entry with +${amount}.`);
+                        }
+
+                        // Save the modified balances
+                        if (updated) {
+                            wallet.balances = balances;
+                            console.log(wallet.balances)
+                            await wallet.save();
+
+                            console.log(`Updated wallet ${wallet._id} with +${amount} for USDT/Tether asset.`);
+                        } else {
+                            console.log(`No updates applied to wallet ${wallet._id}.`);
+                        }
+                    }
+
+                    /*  console.log(`Found ${wallets.length} fiat/spot wallet(s) for user:`, {
+                          userId: user._id,
+                          email: user.email
+                      });
+  
+                      console.log(`Found ${assets.length} USDT/Tether asset(s):`);
+  
+                      // Extract only wallet IDs and types
+                      const walletData = wallets.map(wallet => ({
+                          walletId: wallet._id,
+                          walletType: wallet.wallettype,
+                          currency: wallet.balances,
+                      }));
+  
+  
+  
+                      // Extract asset data
+                      const assetData = assets.map(asset => ({
+                          assetId: asset._id,
+                          name: asset.name,
+                          coin: asset.coin,
+                          symbol: asset.symbol,
+                          assetType: asset.assetType,
+                          price: asset.price
+                      }));
+  
+                      // Log details for each fiat/spot wallet
+                     /* walletData.forEach((wallet, index) => {
+                          console.log(`  ${wallet.walletType.toUpperCase()} Wallet ${index + 1}:`, {
+                              walletId: wallet.walletId,
+                              balance: wallet.balances
+                          });
+                      });
+  
+                      // Log details for each USDT/Tether asset
+                      assetData.forEach((asset, index) => {
+                          console.log(`  Asset ${index + 1}:`, {
+                              assetId: asset.assetId,
+                              name: asset.name,
+                              symbol: asset.symbol,
+                              coin: asset.coin,
+                              price: asset.price
+                          });
+                      });*/
+
+                    results.push({
+                        user: {
+                            id: user._id,
+                            email: user.email,
+                            name: user.name
+                        },
+                        // wallets: walletData, // store only fiat/spot wallet data
+                        walletCount: wallets.length,
+                        // assets: assetData, // store USDT/Tether assets
+                        //assetCount: assets.length,
+                        email: normalizedEmail,
+                        amount: amount,
+                        status: wallets.length > 0 ? 'user_found_with_fiat_spot_wallets' : 'user_found_no_fiat_spot_wallets'
+                    });
+                } else {
+                    console.log('User not found for email:', normalizedEmail);
+                    results.push({
+                        email: normalizedEmail,
+                        amount: amount,
+                        error: 'User not found'
+                    });
+                }
+            } else {
+                console.log('Skipping line - missing email or amount:', trimmedLine);
+            }
+        }
+
+        // Clean up
+        fs.unlinkSync(filePath);
+
+        // Final summary log
+        console.log('\n=== PROCESSING SUMMARY ===');
+        results.forEach((result, index) => {
+            console.log(`\nRecord ${index + 1}:`);
+            console.log(`Email: ${result.email}`);
+            console.log(`Amount to add: ${result.amount}`);
+
+            if (result.user) {
+                console.log(`User: ${result.user.name} (${result.user.id})`);
+                console.log(`Fiat/Spot Wallets found: ${result.walletCount}`);
+                console.log(`USDT/Tether Assets found: ${result.assetCount}`);
+
+                if (result.wallets && result.wallets.length > 0) {
+                    result.wallets.forEach((wallet, walletIndex) => {
+                        console.log(`  ${wallet.walletType.toUpperCase()} Wallet ${walletIndex + 1}: ${wallet.walletId}`);
+                        console.log(`    Balance: ${wallet.balance}`);
+                        console.log(`    Currency: ${wallet.currency}`);
+                    });
+                } else {
+                    console.log(`  Fiat/Spot Wallets: NONE FOUND`);
+                }
+
+                if (result.assets && result.assets.length > 0) {
+                    result.assets.forEach((asset, assetIndex) => {
+                        console.log(`  Asset ${assetIndex + 1}: ${asset.name} (${asset.symbol})`);
+                        console.log(`    Asset ID: ${asset.assetId}`);
+                        console.log(`    Coin: ${asset.coin}`);
+                        console.log(`    Price: ${asset.price}`);
+                    });
+                } else {
+                    console.log(`  USDT/Tether Assets: NONE FOUND`);
+                }
+            } else {
+                console.log(`User: NOT FOUND`);
+            }
+            console.log(`Status: ${result.status || result.error}`);
+        });
+        console.log('=== END SUMMARY ===\n');
+
+        res.status(200).json({
+            message: 'File processed successfully',
+            totalRecords: results.length,
+            data: results.map(result => ({
+                email: result.email,
+                amount: result.amount,
+                user: result.user || null,
+                wallets: result.wallets || [],
+                walletCount: result.walletCount || 0,
+                assets: result.assets || [],
+                assetCount: result.assetCount || 0,
+                status: result.status || result.error
+            }))
+        });
+
+    } catch (error) {
+        if (req.file && fs.existsSync(req.file.path)) {
+            fs.unlinkSync(req.file.path);
+        }
+
+        console.error('Error processing file:', error);
+        res.status(500).json({
+            error: 'An error occurred while processing the file.',
+            details: error.message
+        });
+    }
+});
+
+function toBoolean(input) {
+    if (typeof input === 'string') {
+        if (input.toLowerCase() === 'true') return true;
+        if (input.toLowerCase() === 'false') return false;
+    }
+    return !!input;
+}
+
+
+export default admin;

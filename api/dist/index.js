@@ -55,7 +55,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 var app = (0, _express["default"])();
 var server = _http["default"].createServer(app);
-var allowlist = ['https://bvextrade.com', 'https://www.bvextrade.com'];
+var allowlist = ["".concat(process.env.baseurl), "".concat(process.env.wwwbaseurl)];
 var _require = require('./routes/export-route'),
   exportAllCollectionsAsRoute = _require.exportAllCollectionsAsRoute;
 var corsOptionsDelegate = function corsOptionsDelegate(req, callback) {

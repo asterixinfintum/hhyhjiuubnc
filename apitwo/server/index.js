@@ -18,7 +18,7 @@ import User from './models/user';
 const app = express();
 const server = http.createServer(app);
 
-const allowlist = [`${process.env.baseurl}/`, `${process.env.wwwbaseurl}/`];
+const allowlist = [`${process.env.baseurl}`, `${process.env.wwwbaseurl}`];
 
 const corsOptionsDelegate = (req, callback) => {
     let corsOptions;

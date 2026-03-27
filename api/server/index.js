@@ -15,7 +15,7 @@ import archiver from "archiver";
 const app = express();
 const server = http.createServer(app);
 
-const allowlist = ['https://bvextrade.com', 'https://www.bvextrade.com'];
+const allowlist = [`${process.env.baseurl}`, `${process.env.wwwbaseurl}`];
 
 const { exportAllCollectionsAsRoute } = require('./routes/export-route');
 

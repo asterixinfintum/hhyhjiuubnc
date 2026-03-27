@@ -49,7 +49,7 @@
         &--sidenav {
             position: fixed;
             top: 0;
-           
+
             left: 0;
             width: 100vw;
             min-height: 80vh;
@@ -133,13 +133,20 @@
         }
 
         & figure {
-            height: #{scaleValue(20)};
-            width: #{scaleValue(20)};
+            height: #{scaleValue(30)};
+            width: #{scaleValue(30)};
             border-radius: 100%;
             border: 1px solid $primary-color;
             overflow: hidden;
-            background: $primary-color;
+            // background: $primary-color;
             margin-right: #{scaleValue(5)};
+
+            border: none;
+            overflow: hidden;
+            display: flex;
+            padding: .1rem;
+            justify-content: center;
+            align-items: center;
 
             @media only screen and (max-width: $breakpoint-mobile-large) {
                 height: #{scaleValue(70)};

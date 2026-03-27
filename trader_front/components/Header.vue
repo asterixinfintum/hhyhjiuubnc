@@ -43,11 +43,15 @@
         </div>
 
         <div class="header__logo" v-if="client" @click="$router.push('/overview')">
-          <figure></figure>
+          <figure>
+            <img src="/favicon.ico" />
+          </figure>
           <p>TRADERZIP</p>
         </div>
         <div class="header__logo" v-if="!client" @click="$router.push('/')">
-          <figure></figure>
+          <figure>
+            <img src="/favicon.ico" />
+          </figure>
           <p>TRADERZIP</p>
         </div>
       </div>
@@ -308,11 +312,15 @@
       <div class="header" :class="generalLandingPageStyle" id="header">
         <div class="header__left">
           <div class="header__logo" v-if="client" @click="$router.push('/overview')">
-            <figure></figure>
+            <figure>
+              <img src="/favicon.ico" />
+            </figure>
             <p>TRADERZIP</p>
           </div>
           <div class="header__logo" v-if="!client" @click="$router.push('/')">
-            <figure></figure>
+            <figure>
+              <img src="/favicon.ico" />
+            </figure>
             <p>TRADERZIP</p>
           </div>
           <div class="header__menu">
